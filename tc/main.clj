@@ -9,19 +9,18 @@
 	)
 	(:use 
 		[tc.transform :only (transform)]
-		[util.gnode2xml :only (dump)]
+		[tc.lib.convert :only (from-gnode to-xml to-gnode)]
 	)
 )
 
 (def blocking #{"blocking"})
 
 (let [ 
-	print (fn [ast]
+	pretty-print (fn [ast]
 		(let [ 
 			stream (BufferedWriter. (OutputStreamWriter. System/out))
 			printer (CPrinter. (Printer. stream))
 		]
-			(print (.toString ast))
 			(.dispatch printer ast)		
 			(.flush stream)
 		)
@@ -31,9 +30,13 @@
     result (.pTranslationUnit parser 0) 
 ]
 	(if (.hasValue result) 
-		(if (= (first *command-line-args*) "dumpXML")
-			(dump (. result value))
-			(print (transform (. result value) blocking))
+		(let [
+			ast (from-gnode (. result value))
+		]
+			(if (= (first *command-line-args*) "dumpXML")
+				(print (to-xml ast))
+				(pretty-print (to-gnode (transform ast blocking)))
+			)
 		)
 		(if (= -1 (. result index)) 
 			(print "Parse Error")

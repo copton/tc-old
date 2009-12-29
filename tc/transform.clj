@@ -1,8 +1,12 @@
 (ns tc.transform
-	(:require [tc.lib :as lib])
+	#_(:require [tc.lib :as lib])
+)
+
+(defn caller-map [ast]
+	
 )
 
 (defn transform [ast blocking]
 	(prn "transform")
-	(lib/first-of ast :nix)
+	ast
 )
